@@ -71,46 +71,6 @@ namespace SvgSharp
         }
     }
 
-    public class SvgElement : BasicElementWithDescription
-    {
-        public string Y { get; set; }
-        public string X { get; set; }
-        public string Height { get; set; }
-        public string Width { get; set; }
-
-        protected override void ReadAttribute(XmlReader reader)
-        {
-            switch (reader.Name)
-            {
-                case "width":
-                {
-                    Width = reader.Value;
-                    return;
-                }
-                case "height":
-                {
-                    Height = reader.Value;
-                    return;
-                }
-                case "x":
-                {
-                    X = reader.Value;
-                    return;
-                }
-                case "y":
-                {
-                    Y = reader.Value;
-                    return;
-                }
-                default:
-                {
-                    base.ReadAttribute(reader);
-                    return;
-                }
-            }
-        }
-    }
-
     public class Description : BasicElementWithDescription
     {
     }
@@ -118,82 +78,12 @@ namespace SvgSharp
     public class Metadata : BasicElementWithDescription
     {
     }
-    public class GraphicsElement : BasicElementWithDescription, IPresentation
-    {
-        public string AlignmentBaseline { get; set; }
-        public string BaselineShift { get; set; }
-        public string Clip { get; set; }
-        public string ClipPath { get; set; }
-        public string ClipRule { get; set; }
-        public string Color { get; set; }
-        public string ColorInterpolation { get; set; }
-        public string ColorInterpolationFilters { get; set; }
-        public string ColorProfile { get; set; }
-        public string ColorRendering { get; set; }
-        public string Cursor { get; set; }
-        public string Direction { get; set; }
-        public string Display { get; set; }
-        public string DominantBaseline { get; set; }
-        public string EnableBackground { get; set; }
-        public string Fill { get; set; }
-        public string FillOpacity { get; set; }
-        public string FillRule { get; set; }
-        public string Filter { get; set; }
-        public string FloodColor { get; set; }
-        public string FloodOpacity { get; set; }
-        public string FontFamily { get; set; }
-        public string FontSize { get; set; }
-        public string FontSizeAdjust { get; set; }
-        public string FontStretch { get; set; }
-        public string FontStyle { get; set; }
-        public string FontVariant { get; set; }
-        public string FontWeight { get; set; }
-        public string GlyphOrientationHorizontal { get; set; }
-        public string GlyphOrientationVertical { get; set; }
-        public string ImageRendering { get; set; }
-        public string Kerning { get; set; }
-        public string LetterSpacing { get; set; }
-        public string LightingColor { get; set; }
-        public string MarkerEnd { get; set; }
-        public string MarkerMid { get; set; }
-        public string MarkerStart { get; set; }
-        public string Mask { get; set; }
-        public string Opacity { get; set; }
-        public string Overflow { get; set; }
-        public string PointerEvents { get; set; }
-        public string ShapeRendering { get; set; }
-        public string StopColor { get; set; }
-        public string StopOpacity { get; set; }
-        public string Stroke { get; set; }
-        public string StrokeDasharray { get; set; }
-        public string StrokeDashoffset { get; set; }
-        public string StrokeLinecap { get; set; }
-        public string StrokeLinejoin { get; set; }
-        public string StrokeMiterlimit { get; set; }
-        public string StrokeOpacity { get; set; }
-        public string StrokeWidth { get; set; }
-        public string TextAnchor { get; set; }
-        public string TextDecoration { get; set; }
-        public string TextRendering { get; set; }
-        public string UnicodeBidi { get; set; }
-        public string Visibility { get; set; }
-        public string WordSpacing { get; set; }
-        public string WritingMode { get; set; }
 
-        protected override void ReadAttribute(XmlReader reader)
-        {
-            if (!AttributeHelper.ReadPresentation(this, reader))
-            {
-                base.ReadAttribute(reader);
-            }
-        }
-    }
-
-    public class Circle : SvgElement
+    public class Circle : GraphicsElement
     {
     }
 
-    public class Group : SvgElement
+    public class Group : GraphicsElement
     {
         public List<BasicElement> Elements { get; set; }
 
@@ -259,35 +149,7 @@ namespace SvgSharp
     {
     }
 
-    public class Rect : SvgElement
-    {
-        public string Rx { get; set; }
-        public string Ry { get; set; }
-
-        protected override void ReadAttribute(XmlReader reader)
-        {
-            switch (reader.Name)
-            {
-                case "rx":
-                {
-                    Rx = reader.Value;
-                    return;
-                }
-                case "ry":
-                {
-                    Ry = reader.Value;
-                    return;
-                }
-                default:
-                {
-                    base.ReadAttribute(reader);
-                    return;
-                }
-            }
-        }
-    }
-
-    public class Text : SvgElement
+    public class Text : GraphicsElement
     {
         public string Dx { get; set; }
         public string Dy { get; set; }
@@ -342,96 +204,6 @@ namespace SvgSharp
                 {
                     base.ReadElement(reader);
                     return;
-                }
-            }
-        }
-    }
-
-    public class BasicElement : ICore
-    {
-        public string Id { get; set; }
-        public string XmlBase { get; set; }
-        public string XmlLang { get; set; }
-        public string XmlSpace { get; set; }
-
-        internal void FromXml(XmlReader reader)
-        {
-            var startDepth = reader.Depth;
-            var childDepth = startDepth + 1;
-            if (reader.HasAttributes)
-            {
-                while (reader.MoveToNextAttribute())
-                {
-                    ReadAttribute(reader);
-                }
-            }
-            reader.MoveToElement();
-            ReadContent(reader);
-            while (reader.Depth > startDepth)
-            {
-                if (reader.Depth > childDepth)
-                {
-                    reader.Read();
-                    continue;
-                }
-                if (reader.NodeType == XmlNodeType.Element)
-                {
-                    ReadElement(reader);
-                }
-                else
-                {
-                    reader.Read();
-                }
-            }
-        }
-
-        protected virtual void ReadContent(XmlReader reader)
-        {
-            reader.Read();
-        }
-
-        protected virtual void ReadElement(XmlReader reader)
-        {
-            reader.Read();
-        }
-
-        protected virtual void ReadAttribute(XmlReader reader)
-        {
-            AttributeHelper.ReadCore(this, reader);
-        }
-    }
-
-    internal static class ElementHelper
-    {
-        public static T Create<T>(XmlReader reader) where T : BasicElement, new()
-        {
-            var result = new T();
-            result.FromXml(reader);
-            return result;
-        }
-
-        public static bool ReadDescriptive(IDescriptive descriptive, XmlReader reader)
-        {
-            switch (reader.Name)
-            {
-                case "title":
-                {
-                    descriptive.Title = Create<Title>(reader);
-                    return true;
-                }
-                case "desc":
-                {
-                    descriptive.Description = Create<Description>(reader);
-                    return true;
-                }
-                case "metadata":
-                {
-                    descriptive.Metadata = Create<Metadata>(reader);
-                    return true;
-                }
-                default:
-                {
-                    return false;
                 }
             }
         }
